@@ -15,6 +15,7 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install ruff
+      - run: ruff check . --fix
       - run: ruff check .
 
   test:
@@ -24,7 +25,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install -e ".[dev]"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools<70
+          pip install -e ".[dev]"
       - run: pytest app/test_app.py -v --cov=app --cov-report=xml
 
   build:
