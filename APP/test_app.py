@@ -7,7 +7,7 @@ import pytest
 from fastapi.testclient import TestClient
 from PIL import Image
 
-from app.main import CLASSES, _preprocess_image, app
+from APP.main import CLASSES, _preprocess_image, app
 
 
 @pytest.fixture
