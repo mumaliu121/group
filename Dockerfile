@@ -12,7 +12,7 @@ COPY pyproject.toml ./
 RUN pip install --no-cache-dir ".[dev]" fastapi uvicorn
 
 # 复制应用代码
-COPY app/ ./app/
+COPY APP/ ./APP/
 COPY ml/registry/ ./ml/registry/
 
 # 加载模型（运行时从 volume 或环境变量指定路径）
@@ -21,4 +21,4 @@ ENV PORT=8000
 
 EXPOSE ${PORT}
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "APP.main:app", "--host", "0.0.0.0", "--port", "8000"]

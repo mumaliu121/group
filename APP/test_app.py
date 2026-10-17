@@ -38,7 +38,7 @@ class TestPredict:
     def test_predict_valid_image(self, client, sample_rgb_image):
         """正常 JPEG 图片能成功返回预测结果"""
         files = {"file": ("test.jpg", sample_rgb_image, "image/jpeg")}
-        with patch("app.main._load_model") as mock_model:
+        with patch("APP.main._load_model") as mock_model:
             mock_model.return_value = MagicMock()
             mock_model.return_value.side_effect = lambda x: MagicMock(
                 cpu=MagicMock(numpy=MagicMock(return_value=[[0.1] * 27]))
@@ -61,7 +61,7 @@ class TestPredict:
     def test_predict_invalid_format(self, client):
         """非图片格式文件应返回 400"""
         files = {"file": ("readme.txt", io.BytesIO(b"not an image"), "text/plain")}
-        with patch("app.main._load_model"):
+        with patch("APP.main._load_model"):
             r = client.post("/predict", files=files)
             # 可能在预处理阶段失败
             assert r.status_code == 400 or r.status_code == 500
@@ -71,7 +71,7 @@ class TestPredict:
 class TestPredictBatch:
     def test_batch_single(self, client, sample_rgb_image):
         """批量接口传入单张图正常返回"""
-        with patch("app.main.predict") as mock_pred:
+        with patch("APP.main.predict") as mock_pred:
             mock_pred.return_value = {"class": "dry-asphalt-smooth", "confidence": 0.95}
             r = client.post("/predict/batch", files=[("files", ("a.jpg", sample_rgb_image, "image/jpeg"))])
             assert r.status_code == 200
