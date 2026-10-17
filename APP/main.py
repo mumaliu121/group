@@ -1,16 +1,14 @@
 """FastAPI 推理服务入口"""
 
-import os
 import io
-from pathlib import Path
-from typing import Optional
+import os
 
-import torch
 import numpy as np
-from PIL import Image
-from fastapi import FastAPI, HTTPException, UploadFile, File
+import torch
+from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-import mlflow.tracking
+from PIL import Image
+from PIL.UnidentifiedImageError import UnidentifiedImageError
 
 app = FastAPI(title="路面状态分类服务", version="1.0.0")
 
@@ -74,14 +72,14 @@ def root():
 
 
 @app.post("/predict")
-def predict(file: UploadFile = File(...)):
+def predict(file: UploadFile):
     """单图预测，返回概率最高的类别"""
     contents = file.file.read()
     if not contents:
         raise HTTPException(status_code=400, detail="空文件")
     try:
         img = Image.open(io.BytesIO(contents)).convert("RGB")
-    except Exception:
+    except UnidentifiedImageError:
         raise HTTPException(status_code=400, detail="无法解析图片格式")
 
     model = _load_model()
@@ -99,7 +97,7 @@ def predict(file: UploadFile = File(...)):
 
 
 @app.post("/predict/batch")
-def predict_batch(files: list[UploadFile] = File(...)):
+def predict_batch(files: list[UploadFile]):
     """批量预测"""
     results = []
     for f in files:

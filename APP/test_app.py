@@ -1,12 +1,13 @@
 """app/main.py 单元测试（含边界 case）"""
 
-import pytest
 import io
+from unittest.mock import MagicMock, patch
+
+import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import patch, MagicMock
 from PIL import Image
 
-from app.main import app, CLASSES, _preprocess_image
+from app.main import CLASSES, _preprocess_image, app
 
 
 @pytest.fixture
