@@ -29,7 +29,7 @@ road-surface-mlops/
 ├── Dockerfile                    # 推理服务镜像（slim 轻量化）
 ├── .dockerignore
 ├── .gitignore
-├── pyproject.toml                # 依赖：torch、mlflow、dvc、fastapi、ruff、pytest 等
+├── pyproject.toml                # 依赖：torch、mlflow、dvc、fastapi、pytest 等
 ├── DEPLOYMENT.md                 # staging/prod 部署流程文档
 └── README.md                     # 项目总览
 ```
