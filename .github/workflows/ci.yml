@@ -36,9 +36,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install ".[dev]"
 
-      - name: Run pytest unit tests (app/test_app.py)
+      - name: Run pytest unit tests
         run: |
-          python -m pytest app/test_app.py -v --cov=app --cov-report=xml --junitxml=report-app.xml
+          python -m pytest APP/test_app.py -v --cov=APP --cov-report=xml --junitxml=report-app.xml
 
       - name: Upload pytest test report (always run)
         uses: actions/upload-artifact@v4
