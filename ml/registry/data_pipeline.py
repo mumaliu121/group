@@ -2,11 +2,9 @@
 数据集预处理与类别权重计算模块
 """
 
-import os
 import numpy as np
 import torch
 from torchvision import datasets, transforms
-from pathlib import Path
 
 
 def get_class_weights(data_root: str, cfg: dict) -> torch.Tensor:

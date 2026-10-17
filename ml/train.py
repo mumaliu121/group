@@ -10,22 +10,19 @@ import os
 import sys
 from pathlib import Path
 
-import torch
-import torch.nn as nn
-import torch.optim as optim
-from torchvision import datasets, transforms, models
-from torch.utils.data import DataLoader, WeightedRandomSampler
-import numpy as np
-from sklearn.metrics import f1_score, confusion_matrix, classification_report
 import mlflow
 import mlflow.pytorch
+import numpy as np
+import torch
 import yaml
+from sklearn.metrics import classification_report, confusion_matrix, f1_score
+from torch import nn, optim
+from torch.utils.data import DataLoader, WeightedRandomSampler
+from torchvision import models
 
 sys.path.insert(0, str(Path(__file__).parent / "registry"))
 from data_pipeline import (
-    get_class_weights,
     build_dataset,
-    build_dataloader,
 )
 
 
@@ -179,7 +176,7 @@ def main():
             f"- **最佳 Epoch**: {best_epoch}\n"
             f"- **Git Commit**: `{os.popen('git rev-parse HEAD').read().strip()}`\n"
         )
-        print(f"📝 current_model.md 已更新")
+        print("📝 current_model.md 已更新")
 
 
 if __name__ == "__main__":
