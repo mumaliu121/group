@@ -7,8 +7,7 @@ import numpy as np
 import torch
 from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from PIL import Image
-from PIL.UnidentifiedImageError import UnidentifiedImageError
+from PIL import Image, UnidentifiedImageError
 
 app = FastAPI(title="路面状态分类服务", version="1.0.0")
 

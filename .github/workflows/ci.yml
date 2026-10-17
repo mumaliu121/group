@@ -39,7 +39,7 @@ jobs:
       - name: Run pytest unit tests
         run: |
           export PYTHONPATH=.
-          python -m pytest APP/test_app.py -v --cov=APP --cov-report=xml --junitxml=report-app.xml
+          python -m pytest APP/test_app.py -v --cov=APP --cov-report=xml --junitxml=report-app.xml -W ignore::DeprecationWarning
 
       - name: Upload pytest test report (always run)
         uses: actions/upload-artifact@v4
