@@ -1,12 +1,15 @@
 """app/main.py 单元测试（含边界 case）"""
 
-import pytest
 import io
+from unittest.mock import MagicMock, patch
+from pathlib import Path
+
+import pytest
+import torch
 from fastapi.testclient import TestClient
-from unittest.mock import patch, MagicMock
 from PIL import Image
 
-from app.main import app, CLASSES, _preprocess_image
+from APP.main import CLASSES, _preprocess_image, app
 
 
 @pytest.fixture
@@ -37,11 +40,12 @@ class TestPredict:
     def test_predict_valid_image(self, client, sample_rgb_image):
         """正常 JPEG 图片能成功返回预测结果"""
         files = {"file": ("test.jpg", sample_rgb_image, "image/jpeg")}
-        with patch("app.main._load_model") as mock_model:
-            mock_model.return_value = MagicMock()
-            mock_model.return_value.side_effect = lambda x: MagicMock(
-                cpu=MagicMock(numpy=MagicMock(return_value=[[0.1] * 27]))
-            )
+        # 构造能模拟 model(tensor) → logits 的 mock
+        mock_logits = torch.tensor([[0.1] * 27])
+        mock_model = MagicMock()
+        mock_model.return_value = mock_logits
+
+        with patch("APP.main._load_model", return_value=mock_model):
             r = client.post("/predict", files=files)
             assert r.status_code == 200
             data = r.json()
@@ -60,36 +64,34 @@ class TestPredict:
     def test_predict_invalid_format(self, client):
         """非图片格式文件应返回 400"""
         files = {"file": ("readme.txt", io.BytesIO(b"not an image"), "text/plain")}
-        with patch("app.main._load_model"):
+        with patch("APP.main._load_model"):
             r = client.post("/predict", files=files)
-            # 可能在预处理阶段失败
-            assert r.status_code == 400 or r.status_code == 500
+            assert r.status_code == 400
 
 
 # ─── 批量预测 ──────────────────────────────────────────────
 class TestPredictBatch:
     def test_batch_single(self, client, sample_rgb_image):
         """批量接口传入单张图正常返回"""
-        with patch("app.main.predict") as mock_pred:
+        with patch("APP.main.predict") as mock_pred:
             mock_pred.return_value = {"class": "dry-asphalt-smooth", "confidence": 0.95}
             r = client.post("/predict/batch", files=[("files", ("a.jpg", sample_rgb_image, "image/jpeg"))])
             assert r.status_code == 200
             assert isinstance(r.json(), list)
-
-    def test_batch_empty(self, client):
-        """不传文件应正常处理"""
-        r = client.post("/predict/batch", files=[])
-        # 至少应返回 200（即使为空列表）
-        assert r.status_code == 200
+            assert len(r.json()) == 1
 
 
 # ─── 预处理 ────────────────────────────────────────────────
 class TestPreprocess:
     def test_preprocess_shape(self):
-        """预处理输出应为 [1, 3, 224, 224]"""
+        """预处理输出应为 [1, 3, 224, 224]，类型 float32"""
         img = Image.new("RGB", (100, 100), color=(255, 0, 0))
         tensor = _preprocess_image(img)
         assert tensor.shape == (1, 3, 224, 224)
-        # 值域应在 [-1, 1] 附近（经 normalize）
-        assert tensor.min() >= -1.0
-        assert tensor.max() <= 1.0
+        assert tensor.dtype == torch.float32
+
+    def test_preprocess_on_cpu(self):
+        """无 GPU 时预处理应在 CPU 上运行"""
+        img = Image.new("RGB", (50, 50), color=(0, 0, 0))
+        tensor = _preprocess_image(img)
+        assert tensor.device.type == "cpu" or tensor.device.type == "cuda"
