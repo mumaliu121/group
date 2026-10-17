@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pth
+*.npy
+*.egg-info/
+*.pyc
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# ML artifacts
+mlruns/
+mlflow.db
+models/*.pth
+models/*.pt
+models/*.pkl
+
+# Data - managed by DVC, do not commit raw images
+data/*.jpg
+data/*.png
+data/*.jpeg
+data/.dvc/
+!.gitkeep
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

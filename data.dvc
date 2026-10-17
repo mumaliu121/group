@@ -1,0 +1,10 @@
+outs:
+- md5: placeholder  # 运行 `dvc add data/` 后自动生成
+  depth: 2
+  size: 0
+  nfiles: 0
+  source:
+    checksum: md5
+    meta: null
+    path: data
+    protocol: local
