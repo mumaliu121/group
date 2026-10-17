@@ -36,10 +36,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install ".[dev]"
 
-      - name: Run pytest unit tests
+      - name: Run pytest unit tests (APP/test_app.py)
         run: |
           export PYTHONPATH=.
-          python -m pytest APP/test_app.py -v --cov=APP --cov-report=xml --junitxml=report-app.xml -W ignore::DeprecationWarning
+          python -m pytest APP/test_app.py -v --cov=APP --cov-report=xml --cov-report=term --junitxml=report-app.xml
 
       - name: Upload pytest test report (always run)
         uses: actions/upload-artifact@v4
@@ -58,7 +58,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Verify docker build success
-        run: docker build -t road-surface-check:${{ github.sha }} .
+        run: docker build -t road-surface-classifier:${{ github.sha }} .
 
   build-staging:
     name: Build Staging Image
