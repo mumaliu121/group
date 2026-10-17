@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 路面状态图像分类训练脚本
 - 基于 MobileNetV2 迁移学习
